@@ -7,9 +7,7 @@ import webhookRoute from './routes/webhook.js';
 const app = express();
 
 app.use(
-  bodyParser.json({
-    verify: verifySignature,
-  })
+  bodyParser.json()
 );
 
 app.use('/webhook', webhookRoute);
