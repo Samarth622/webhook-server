@@ -6,8 +6,28 @@ import fs from 'fs';
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
-// Run ESLint on a target directory
-export function runESLint(targetPath) {
+export async function runESLint(targetPath) {
+  const configPath = path.join(targetPath, 'eslint.config.js');
+
+  if (!fs.existsSync(configPath)) {
+    fs.writeFileSync(
+      configPath,
+      `
+export default [
+  {
+    files: ["**/*.js"],
+    rules: {
+      semi: "error",
+      "no-unused-vars": "warn",
+      "no-undef": "error",
+      "no-console": "off"
+    }
+  }
+];
+`
+    );
+  }
+
   return new Promise((resolve, reject) => {
     exec(
       `npx eslint . --ext .js,.jsx,.ts,.tsx -f json`,
@@ -28,7 +48,6 @@ export function runESLint(targetPath) {
   });
 }
 
-// Run Prettier on a target directory
 export function runPrettier(targetPath) {
   return new Promise((resolve, reject) => {
     exec(
