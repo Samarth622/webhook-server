@@ -1,6 +1,10 @@
 import path from 'path';
 import fs from 'fs';
 import simpleGit from 'simple-git';
+import { fileURLToPath } from 'url';
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
 
 const REPO_BASE_PATH = path.resolve(__dirname, '../../repos');
 
