@@ -4,6 +4,8 @@ import path from "path";
 import dotenv from "dotenv";
 dotenv.config();
 
+console.log("🔑 Gemini API Key Loaded:", !!process.env.GEMINI_API_KEY);
+
 const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY);
 
 export async function reviewCodeWithGemini(filePath) {
