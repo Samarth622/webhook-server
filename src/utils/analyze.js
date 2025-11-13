@@ -47,19 +47,3 @@ export default [
     );
   });
 }
-
-export function runPrettier(targetPath) {
-  return new Promise((resolve, reject) => {
-    exec(
-      `npx prettier "**/*.{js,jsx,ts,tsx}" --check`,
-      { cwd: targetPath },
-      (err, stdout, stderr) => {
-        if (err && !stdout) {
-          return reject(new Error(stderr));
-        }
-
-        resolve(stdout.trim());
-      }
-    );
-  });
-}

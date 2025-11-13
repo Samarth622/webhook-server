@@ -1,6 +1,6 @@
 import express from "express";
 import { cloneOrPullRepo } from "../utils/git.js";
-import { runESLint, runPrettier } from "../utils/analyze.js";
+import { runESLint } from "../utils/analyze.js";
 import { reviewCodeWithGemini } from "../utils/gemini.js";
 import fs from "fs";
 import path from "path";
@@ -31,11 +31,7 @@ router.post("/", async (req, res) => {
       (acc, file) => acc + file.warningCount,
       0
     );
-    console.log(`✅ ESLint: ${errorCount} errors, ${warningCount} warnings`);
-
-    console.log("🧼 Checking Prettier...");
-    const prettierOutput = await runPrettier(localRepoPath);
-    console.log(`🧾 Prettier Output:\n${prettierOutput}`);
+    console.log(`✅ ESLint: ${errorCount} errors, ${warningCount} warnings`);;
 
     const changedFiles = payload.head_commit.modified.concat(
       payload.head_commit.added
@@ -57,7 +53,6 @@ router.post("/", async (req, res) => {
       message: "Analysis complete",
       eslintErrors: errorCount,
       eslintWarnings: warningCount,
-      prettierSummary: prettierOutput,
       filesReviewed: reviewResults.length,
       suggestions: reviewResults,
     });
