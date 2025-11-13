@@ -1,19 +1,31 @@
 import express from "express";
 const router = express.Router();
+import { cloneOrPullRepo } from "../utils/git.js";
 
-router.post("/", (req, res) => {
-  const event = req.headers["x-github-event"];
-  const payload = req.body;
+router.post("/", async (req, res) => {
+  try {
+    const event = req.headers['x-github-event'];
+    if (event !== 'push') return res.sendStatus(204);
 
-  console.log("🚀 Headers: ", req.headers);
+    const payload = req.body;
 
-  console.log("📬 Webhook received: ", payload);
+    const repoUrl = payload.repository.clone_url;
+    const repoName = payload.repository.name;
+    const branch = payload.ref.split('/').pop();
+    const commitId = payload.head_commit.id;
 
-  console.log(`📦 Received GitHub Event: ${event}`);
-  console.log(`🧑 Author: ${payload.head_commit?.author?.name}`);
-  console.log(`📄 Message: ${payload.head_commit?.message}`);
+    console.log(`🧠 Processing push to ${repoName} on branch ${branch}`);
+    console.log(`🔗 Repo: ${repoUrl}`);
+    console.log(`📌 Commit: ${commitId}`);
 
-  res.status(200).json({ message: "Webhook received successfully" });
+    const localRepoPath = await cloneOrPullRepo(repoUrl, repoName, branch);
+    console.log(`✅ Code ready at: ${localRepoPath}`);
+
+    res.status(200).json({ message: 'Repo ready for analysis' });
+  } catch (err) {
+    console.error('❌ Error handling push:', err.message);
+    res.status(500).send('Error processing push event');
+  }
 });
 
 export default router;
